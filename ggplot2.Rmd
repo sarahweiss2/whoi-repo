@@ -69,7 +69,7 @@ ggplot(data = se) +
   geom_point(aes(x = year, y = visitors, color = state) ) + 
   labs(x = "Year",
        y = "Visitors", 
-       title = "Visitors across State Parks") +
+       title = "Visitors across SE Region National Parks") +
   theme_classic() +
   theme(legend.title = element_blank (),
         axis.text.x = element_text(angle = 45, size = 14))
