@@ -30,3 +30,48 @@ mass <- read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-tra
 
 ```
 
+Start with the California ('ca') dataset
+
+```{r}
+head(ca)
+View(ca)
+```
+
+Plot visualization to all CA National parks over time
+```{r}
+ggplot(data = ca) +
+  geom_point(aes(x = year, y = visitors))
+```
+```{r}
+ggplot(data = ca) +
+  geom_point(aes(x = year, y = visitors, color = park_name))
+```
+```{r}
+ggplot(data = ca) +
+  geom_point(aes(x = year, y = visitors, color = park_name)) +
+  labs(x = "Year",
+       y = "Visitation",
+       title = "California National Park Visitation")
+```
+
+```{r}
+ggplot(data = ca) +
+  geom_point(aes(x = year, y = visitors, color = park_name)) +
+  labs(x = "Year",
+       y = "Visitation",
+       title = "California National Park Visitation") + 
+  theme_bw() + #this utilized a different theme
+  theme(legend.title = element_blank ()) #this removed the legend title
+```
+
+```{r}
+ggplot(data = se) +
+  geom_point(aes(x = year, y = visitors, color = state) ) + 
+  labs(x = "Year",
+       y = "Visitors", 
+       title = "Visitors across State Parks") +
+  theme_classic() +
+  theme(legend.title = element_blank (),
+        axis.text.x = element_text(angle = 45, size = 14))
+```
+
