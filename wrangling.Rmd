@@ -30,7 +30,7 @@ tail(gapminder, 10)
 str(gapminder)
 summary(gapminder)
 
-install.packages("skimr")
+#install.packages("skimr")
 skimr::skim(gapminder)
 
 names(gapminder) # column names
@@ -41,3 +41,57 @@ nrow(gapminder) # number of rows
 #reverse- engineer dim
 c(nrow(gapminder), ncol(gapminder))
 ```
+
+## Dplyr
+```{r}
+# filter by rows
+filter(gapminder, lifeExp < 29)
+```
+
+```{r}
+# select by columns
+select(gapminder, year, lifeExp) # select only these columns
+select(gapminder, -continent, -lifeExp) # - will exclude these columns
+
+# use selct and filter together
+gap_cambodia <- filter(gapminder, country =="Cambodia")
+gap_cambodia2 <- select(gap_cambodia, -continent, -lifeExp)
+```
+
+The pipe operator will change your life
+```{r}
+# this 
+gapminder %>% head(3)
+#is equivalent to:
+head(gapminder, 3)
+
+#let's improve this with pipes!
+gap_cambodia <- filter(gapminder, country =="Cambodia")
+gap_cambodia2 <- select(gap_cambodia, -continent, -lifeExp)
+
+gap_cambodia <- gapminder %>% 
+  filter(country = "Cambodia") %>% 
+  select(-continent, -lifeExp)
+```
+
+```{r}
+# mutate adds new variable
+gapminder %>% 
+  mutate(index = 1:nrow(gapminder))
+
+gapminder %>% 
+  mutate(planet = "Earth")
+
+gapminder %>% 
+  mutate(gdp = pop * gdpPercap)
+
+## Challenge:
+#Find the maximum gdpPerCap of Egypt and Vietnam. Create a new column. (I want just ine number that is the max of those two countries)
+
+gapminder %>% 
+  filter(country %in% c("Egypt", "Vietnam")) %>% 
+  mutate(gdp = pop * gdpPercap,
+         max_gdp = max(gdp))
+
+```
+
