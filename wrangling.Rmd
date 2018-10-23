@@ -3,6 +3,8 @@ title: "Data Wrangling"
 author: "Sarah Weiss"
 date: "10/22/2018"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## Load Libraries
@@ -148,8 +150,93 @@ rj <- right_join(gap_2007, co2, by = "country")
 # this is the same as 
 lj2 <- left_join(co2, gap_2007, by = "country") # but column position is different
 
+```
+ 
+```{r}
+## read in gapminder data in wide format
+gap_wide <- readr::read_csv('https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/gapminder_wide.csv')
 
+colnames(gap_wide)
+```
+ 
+ ## tidyr::gather()
+```{r}
+gaplong <- gap_wide %>% 
+  gather(key   = obstype_year,
+         value = obs_values,
+         -continent, -country)
 
 ```
  
+ ## tidyr::separate()
+```{r}
+gaplong <- gap_wide %>% 
+  gather(key   = obstype_year,
+         value = obs_values,
+         -continent, -country) %>%
+  separate(col = obstype_year,
+           into = c("obs_type", "year"),
+           sep = "_",
+           convert = TRUE)
+```
  
+ ## plot long data
+```{r}
+canada_df <- gaplong %>% 
+  filter(country == "Canada",
+         obs_type == "lifeExp")
+
+ggplot(data = canada_df, aes(x = year, y = obs_values)) +
+  geom_line()
+
+```
+ 
+ Plot the life expectancy of all countries in the Americas
+```{r}
+life_df <- gaplong %>% 
+  filter(obs_type == "lifeExp",
+         continent == "Americas")
+
+ggplot(data = life_df, aes(x = year, y = obs_values, color = country)) +
+  geom_line()
+
+```
+ 
+## 7.5 Exercise 
+Using gaplong, calculate and plot the mean life expectancy for each continet over time from 1982 to 2007
+```{r}
+continents <- gaplong %>%
+  filter(obs_type == "lifeExp",
+         year >1980) %>%  #gets us the data that we want, but still have to calculate mean life expectancy 
+  group_by(continent, year) %>%
+  summarize(mean_le = mean(obs_values)) %>% 
+  ungroup()
+
+#plot using ggplot  
+ggplot(data = continents, aes(x = year, y = mean_le, color = continent)) +
+  geom_line() +
+    labs(x = "Year",
+         y = "Age (years",
+         title = "Mean life expectancy") +
+    theme_bw()
+```
+
+## spread() Turn long dataset into wide dataset
+
+```{r}
+gap_normal <- gaplong %>% 
+  spread(key = obs_type,
+         value = obs_values)
+```
+
+## 7.6 
+Convert "gaplong" all the way back to gap_wide. Hint: you'll need to create appropriate labels for all our new variables (time*metric combinatons) with the opposite of separate: tidyr::unite()
+
+```{r}
+gap_wide_new <- gaplong %>% 
+  unite(col = var_names, obs_type, year, sep = "-") %>% 
+  spread(key = var_names,
+         value = obs_values)
+  
+```
+
